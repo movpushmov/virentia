@@ -1,0 +1,58 @@
+.VPHome {
+  --vp-home-hero-image-background-image: linear-gradient(
+    135deg,
+    rgba(168, 177, 255, 0.4),
+    rgba(127, 140, 255, 0.18)
+  );
+  --vp-home-hero-image-filter: blur(44px);
+}
+
+.VPNavBarTitle .logo {
+  width: 26px;
+  height: 26px;
+}
+
+.VPHero .image-container {
+  transform: none;
+}
+
+.VPHero .image-bg {
+  opacity: 0.9;
+}
+
+.VPHero .image-src {
+  width: min(272px, 50vw);
+  max-width: 272px;
+  height: auto;
+}
+
+@media (max-width: 959px) {
+  .VPHero .image {
+    margin: 0 auto 28px;
+  }
+
+  .VPHero .image-src {
+    width: 156px;
+  }
+}
+
+.vp-doc .home-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.vp-doc .home-code-row > div {
+  min-width: 0;
+}
+
+.vp-doc .home-code-row div[class*="language-"] {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .vp-doc .home-code-row {
+    grid-template-columns: 1fr;
+  }
+}

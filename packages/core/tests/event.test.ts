@@ -1,0 +1,66 @@
+import { describe, expect, it } from "vitest";
+import { event, reaction, scope, scoped } from "../lib";
+
+describe("event", () => {
+  it("requires an active scope when called as a function", async () => {
+    const submitted = event<number>();
+
+    const callWithoutScope = () => submitted(1);
+
+    expect(callWithoutScope).toThrow("Scope is required");
+  });
+
+  it("runs explicit reactions when called in a scope", async () => {
+    const appScope = scope();
+    const submitted = event<number>();
+    const values: number[] = [];
+    reaction({
+      on: submitted,
+      run: (value: number) => {
+        values.push(value);
+      },
+    });
+
+    await scoped(appScope, () => submitted(3));
+
+    expect(values).toEqual([3]);
+  });
+
+  it("derives events with map, filter, and filterMap", async () => {
+    const appScope = scope();
+    const submitted = event<number>();
+    const doubled = submitted.map((value) => value * 2);
+    const even = submitted.filter((value) => value % 2 === 0);
+    const label = submitted.filterMap((value) => (value > 2 ? `#${value}` : undefined));
+    const values: unknown[] = [];
+
+    reaction({
+      on: doubled,
+      run: (value: number) => {
+        values.push(["doubled", value]);
+      },
+    });
+    reaction({
+      on: even,
+      run: (value: number) => {
+        values.push(["even", value]);
+      },
+    });
+    reaction({
+      on: label,
+      run: (value: string) => {
+        values.push(["label", value]);
+      },
+    });
+
+    await scoped(appScope, () => submitted(2));
+    await scoped(appScope, () => submitted(3));
+
+    expect(values).toEqual([
+      ["doubled", 4],
+      ["even", 2],
+      ["doubled", 6],
+      ["label", "#3"],
+    ]);
+  });
+});

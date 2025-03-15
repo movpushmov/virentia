@@ -1,0 +1,39 @@
+{
+  "name": "@virentia/core",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://movpushmov.dev/virentia/core/",
+  "bugs": {
+    "url": "https://github.com/movpushmov/virentia/issues"
+  },
+  "license": "MIT",
+  "author": "movpushmov",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movpushmov/virentia.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
+}
