@@ -12,8 +12,18 @@ export interface Unit<_T = unknown> {
   readonly node: Node;
 }
 
-export type AnyUnit = Unit<unknown>;
-export type UnitList<T> = Unit<T> | readonly Unit<T>[];
+export type AnyUnit = Unit<any>;
+export type WatchableUnit<T> = Unit<T> & {
+  watch(fn: (payload: T) => unknown): unknown;
+};
+export type SourceUnit<T> =
+  | Store<T>
+  | StoreWritable<T>
+  | EventCallable<T>
+  | Event<T>
+  | Effect<T, any, any>
+  | WatchableUnit<T>;
+export type UnitList<T = any> = SourceUnit<T> | readonly SourceUnit<T>[];
 
 export type UnitInput<T> =
   T extends Store<infer Value>
@@ -39,20 +49,37 @@ export interface Reaction {
   stop(): void;
 }
 
-export interface ReactionConfig<On extends UnitList<unknown>> {
+export interface ReactionConfig<Payload, On extends UnitList<Payload> = UnitList<Payload>> {
   on: On;
-  run(payload: SourceInput<On>): void;
+  run: (payload: Payload) => void;
 }
 
 export interface AutoReactionConfig {
   run(): void;
 }
 
+export function reaction<On extends readonly SourceUnit<any>[]>(config: {
+  on: On;
+  run: (payload: SourceInput<On>) => void;
+}): Reaction;
+export function reaction<Payload>(
+  config: ReactionConfig<Payload, StoreWritable<Payload>>,
+): Reaction;
+export function reaction<Payload>(config: ReactionConfig<Payload, Store<Payload>>): Reaction;
+export function reaction<Payload>(
+  config: ReactionConfig<Payload, EventCallable<Payload>>,
+): Reaction;
+export function reaction<Payload>(config: ReactionConfig<Payload, Event<Payload>>): Reaction;
+export function reaction<Payload, Done, Fail>(
+  config: ReactionConfig<Payload, Effect<Payload, Done, Fail>>,
+): Reaction;
+export function reaction<Payload>(
+  config: ReactionConfig<Payload, WatchableUnit<Payload>>,
+): Reaction;
 export function reaction(run: () => void): Reaction;
 export function reaction(config: AutoReactionConfig): Reaction;
-export function reaction<On extends UnitList<unknown>>(config: ReactionConfig<On>): Reaction;
-export function reaction<On extends UnitList<unknown>>(
-  input: (() => void) | AutoReactionConfig | ReactionConfig<On>,
+export function reaction(
+  input: (() => void) | AutoReactionConfig | ReactionConfig<any, UnitList>,
 ): Reaction {
   const explicit = typeof input === "object" && "on" in input;
   const runHandler = typeof input === "function" ? input : input.run;
@@ -65,7 +92,7 @@ export function reaction<On extends UnitList<unknown>>(
     }
 
     if (explicit) {
-      (runHandler as (payload: SourceInput<On>) => void)(ctx.value as SourceInput<On>);
+      (runHandler as (payload: unknown) => void)(ctx.value);
     } else {
       runAuto();
     }
@@ -160,8 +187,8 @@ function detach(source: Node, next: Node): void {
   }
 }
 
-function asArray<T>(value: UnitList<T>): readonly Unit<T>[] {
-  return Array.isArray(value) ? value : [value as Unit<T>];
+function asArray(value: UnitList): readonly AnyUnit[] {
+  return (Array.isArray(value) ? value : [value]) as readonly AnyUnit[];
 }
 
 function createTrackingScope(): Scope {

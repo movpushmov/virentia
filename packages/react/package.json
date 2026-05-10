@@ -32,14 +32,19 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@virentia/core": "workspace:*"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^19.2.7",
-    "react": "^19.2.1"
+    "happy-dom": "^20.0.10",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
   },
   "peerDependencies": {
     "react": ">=18"

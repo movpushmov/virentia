@@ -60,9 +60,9 @@ export interface ModelCache<Key, Props, Model extends object> {
   clear(scope?: Scope): void;
 }
 
-export type UnitShape<Shape> = Shape extends readonly UnitLike[]
+export type UnitShape<Shape> = Shape extends readonly unknown[]
   ? { readonly [Key in keyof Shape]: UnitValue<Shape[Key]> }
-  : Shape extends Record<string, UnitLike>
+  : Shape extends Record<string, unknown>
     ? { readonly [Key in keyof Shape]: UnitValue<Shape[Key]> }
     : never;
 

@@ -23,6 +23,7 @@
     "packages/effector/tests/**/*.ts",
     "packages/effector/tsdown.config.ts",
     "packages/react/lib/**/*.ts",
+    "packages/react/tests/**/*.ts",
     "packages/react/tsdown.config.ts"
   ]
 }
